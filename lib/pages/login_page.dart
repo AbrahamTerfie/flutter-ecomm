@@ -8,6 +8,8 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final _formkey = GlobalKey<FormState>();
 
+  bool _obscureText = true;
+
   String _email, _password;
 
   Widget _showTitle() {
@@ -38,8 +40,15 @@ class LoginPageState extends State<LoginPage> {
       child: TextFormField(
         onSaved: (val) => _password = val,
         validator: (val) => val.length < 8 ? 'password too short ' : null,
-        obscureText: true,
+        obscureText: _obscureText,
         decoration: InputDecoration(
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() => _obscureText = !_obscureText);
+              },
+              child:
+                  Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+            ),
             border: OutlineInputBorder(),
             labelText: 'password',
             hintText: 'enter password , min length 8 ',
@@ -50,7 +59,7 @@ class LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  //this is a linr added to test the commits are being done properly 
+  //this is a linr added to test the commits are being done properly
 
   Widget _showFormAction() {
     return Padding(

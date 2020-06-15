@@ -6,11 +6,10 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
- final _formkey = GlobalKey<FormState>();
+  final _formkey = GlobalKey<FormState>();
 
-String _username, _email , _password;
-
-
+  bool _obscureText = true;
+  String _username, _email, _password;
 
   Widget _showTitle() {
     return Text('Register', style: Theme.of(context).textTheme.headline1);
@@ -20,7 +19,7 @@ String _username, _email , _password;
     return Padding(
       padding: EdgeInsets.only(top: 20.0),
       child: TextFormField(
-        onSaved: (val)=> _username = val,
+        onSaved: (val) => _username = val,
         validator: (val) => val.length < 6 ? 'username too short ' : null,
         decoration: InputDecoration(
             border: OutlineInputBorder(),
@@ -38,7 +37,7 @@ String _username, _email , _password;
     return Padding(
       padding: EdgeInsets.only(top: 20.0),
       child: TextFormField(
-        onSaved: (val)=> _email = val,
+        onSaved: (val) => _email = val,
         validator: (val) => !val.contains('@') ? 'invalid email' : null,
         decoration: InputDecoration(
             border: OutlineInputBorder(),
@@ -56,10 +55,17 @@ String _username, _email , _password;
     return Padding(
       padding: EdgeInsets.only(top: 20.0),
       child: TextFormField(
-        onSaved: (val)=> _password = val,
+        onSaved: (val) => _password = val,
         validator: (val) => val.length < 8 ? 'password too short ' : null,
-        obscureText: true,
+        obscureText: _obscureText,
         decoration: InputDecoration(
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() => _obscureText = !_obscureText);
+              },
+              child:
+                  Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+            ),
             border: OutlineInputBorder(),
             labelText: 'password',
             hintText: 'enter password , min length 8 ',
@@ -89,22 +95,21 @@ String _username, _email , _password;
             onPressed: () => _submit(),
           ),
           FlatButton(
-            child: Text('Existing user ? Login'),
-            onPressed: () => Navigator.pushReplacementNamed(context, '/login')
-          )
+              child: Text('Existing user ? Login'),
+              onPressed: () =>
+                  Navigator.pushReplacementNamed(context, '/login'))
         ],
       ),
     );
   }
 
-void _submit(){
-
-final form =  _formkey.currentState;
-if (form.validate()){
-  form.save();
-  print('username : $_username email: $_email password: $_password' );
-}
-}
+  void _submit() {
+    final form = _formkey.currentState;
+    if (form.validate()) {
+      form.save();
+      print('username : $_username email: $_email password: $_password');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,16 +122,16 @@ if (form.validate()){
         child: Center(
           child: SingleChildScrollView(
             child: Form(
-              key: _formkey,
+                key: _formkey,
                 child: Column(
-              children: <Widget>[
-                _showTitle(),
-                _showUsernameInput(),
-                _showEmailInput(),
-                _showPasswordInput(),
-                _showFormAction(),
-              ],
-            )),
+                  children: <Widget>[
+                    _showTitle(),
+                    _showUsernameInput(),
+                    _showEmailInput(),
+                    _showPasswordInput(),
+                    _showFormAction(),
+                  ],
+                )),
           ),
         ),
       ),

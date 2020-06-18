@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hilu_flutter/pages/login_page.dart';
+import 'package:hilu_flutter/pages/products_page.dart';
 import 'package:hilu_flutter/pages/register_page.dart';
 
 void main() {
@@ -13,6 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter E-comm',
       routes: {
+        '/products' : (BuildContext context) => ProductsPage(),
        '/login' : (BuildContext context ) => LoginPage(),
        '/register': (BuildContext context) => RegisterPage(),
       },

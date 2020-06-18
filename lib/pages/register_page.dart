@@ -8,9 +8,11 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
+  final _scaffoldkey = GlobalKey<ScaffoldState>();
   final _formkey = GlobalKey<FormState>();
 
-  bool _obscureText = true;
+  bool _isSubmitting, _obscureText = true;
+
   String _username, _email, _password;
 
   Widget _showTitle() {
@@ -84,18 +86,23 @@ class RegisterPageState extends State<RegisterPage> {
       padding: EdgeInsets.only(top: 20.0),
       child: Column(
         children: <Widget>[
-          RaisedButton(
-            child: Text('submit',
-                style: Theme.of(context)
-                    .textTheme
-                    .headline5
-                    .copyWith(color: Colors.black)),
-            elevation: 10.0,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0))),
-            color: Theme.of(context).primaryColor,
-            onPressed: () => _submit(),
-          ),
+          _isSubmitting == true
+              ? CircularProgressIndicator(
+                  valueColor:
+                      AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+                )
+              : RaisedButton(
+                  child: Text('submit',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline5
+                          .copyWith(color: Colors.black)),
+                  elevation: 10.0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () => _submit(),
+                ),
           FlatButton(
               child: Text('Existing user ? Login'),
               onPressed: () =>
@@ -115,6 +122,7 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   void _registerUser() async {
+    setState(() => _isSubmitting = true);
     http.Response response =
         await http.post('http://10.0.2.2:1337/auth/local/register', body: {
       "username": _username,
@@ -123,13 +131,52 @@ class RegisterPageState extends State<RegisterPage> {
     });
 
     final responseData = json.decode(response.body);
+    //error handling during regestration
 
-    print(responseData);
+    if (response.statusCode == 200) {
+      setState(() => _isSubmitting = false);
+      _showSucessSnack();
+
+      _redirectUser();
+
+      print(responseData);
+    } else {
+      setState(() => _isSubmitting = false);
+      final String errorMsg = responseData['message'];
+      _showErrorSnack(errorMsg);
+    }
+  }
+
+  void _showErrorSnack(String errorMsg) {
+    final snackbar = SnackBar(
+        content: Text(
+      errorMsg,
+      style: TextStyle(color: Colors.red),
+    ));
+    _scaffoldkey.currentState.showSnackBar(snackbar);
+    throw Exception('Error regestring : $errorMsg');
+  }
+
+  void _showSucessSnack() {
+    final snackbar = SnackBar(
+        content: Text(
+      'user $_username sucessfully created!',
+      style: TextStyle(color: Colors.green),
+    ));
+    _scaffoldkey.currentState.showSnackBar(snackbar);
+    _formkey.currentState.reset();
+  }
+
+  void _redirectUser() {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, '/products');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldkey,
       appBar: AppBar(
         title: Text("Register"),
       ),

@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
             routes: {
               '/products': (BuildContext context) => ProductsPage(onInit: () {
                     StoreProvider.of<AppState>(context).dispatch(getUserAction);
+
+                      StoreProvider.of<AppState>(context).dispatch(getProductsAction);
                     //start (getuser action) inorder to get userdata
                   }),
               '/login': (BuildContext context) => LoginPage(),
